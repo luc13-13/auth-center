@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lc.auth.center.mapper.UserDao">
+
+    <resultMap id="BaseResultMap" type="com.lc.auth.center.model.UserDO">
+        <!--@Table -->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="loginName" column="login_name" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="INTEGER"/>
+        <result property="idCard" column="id_card" jdbcType="VARCHAR"/>
+        <result property="pwd" column="pwd" jdbcType="VARCHAR"/>
+        <result property="invalid" column="invalid" jdbcType="INTEGER"/>
+        <result property="loginSource" column="login_source" jdbcType="VARCHAR"/>
+        <result property="dtCreated" column="dt_created" jdbcType="TIMESTAMP"/>
+        <result property="dtModified" column="dt_modified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="UserRolePermissionMap" type="com.lc.auth.center.model.ex.UserDOex" extends="BaseResultMap">
+        <result property="roleId" column="role_id" jdbcType="BIGINT"/>
+        <result property="roleDesc" column="role_desc" jdbcType="VARCHAR"/>
+        <result property="permissionId" column="permission_id" jdbcType="BIGINT"/>
+        <result property="permissionDesc" column="permission_desc" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+          id, login_name, email, phone, id_card, pwd, invalid, login_source, dt_created, dt_modified    </sql>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap" >
+        select
+          id, login_name, email, phone, id_card, pwd, invalid, login_source, dt_created, dt_modified        from auth-center.user
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          id, login_name, email, phone, id_card, pwd, invalid, login_source, dt_created, dt_modified
+        from auth-center.user
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="loginName != null and loginName != ''">
+                and login_name = #{loginName}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                and id_card = #{idCard}
+            </if>
+            <if test="pwd != null and pwd != ''">
+                and pwd = #{pwd}
+            </if>
+            <if test="invalid != null">
+                and invalid = #{invalid}
+            </if>
+            <if test="loginSource != null and loginSource != ''">
+                and login_source = #{loginSource}
+            </if>
+            <if test="dtCreated != null">
+                and dt_created = #{dtCreated}
+            </if>
+            <if test="dtModified != null">
+                and dt_modified = #{dtModified}
+            </if>
+        </where>
+    </select>
+
+    <!--查询用户拥有的角色列表-->
+    <select id="queryRolePermission" resultMap="UserRolePermissionMap">
+        SELECT u.id, u.login_name, u.pwd, u.invalid,
+        ro.id role_id,
+        ro.role_desc role_desc,
+        up.id permission_id,up.`desc` permission_desc
+        FROM `user` u
+        LEFT JOIN user_ref_role u_ref_ro ON u.id = u_ref_ro.user_id
+        LEFT JOIN role ro ON ro.id = u_ref_ro.role_id
+        LEFT JOIN role_ref_permission ro_ref_p ON ro.id = ro_ref_p.role_id
+        LEFT JOIN u_permission up
+        ON ro_ref_p.permission_id = up.id
+        WHERE u.id = #{id,jdbcType=BIGINT}
+        and u.invalid = 1
+        and u_ref_ro.invalid = 1
+        and ro_ref_p.invalid = 1
+    </select>
+</mapper>
+

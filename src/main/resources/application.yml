@@ -1,0 +1,45 @@
+server:
+  port: 8809
+spring:
+  application:
+    name: auth-center
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/auth-center?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: Lc123456@
+
+  redis:
+
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    lettuce:
+      pool:
+        min-idle: 8
+        max-idle: 500
+        max-active: 2000
+        max-wait: 10000
+    timeout: 5000
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+luc-sys-properties:
+  enable-redis-cache: true
+  shiro-properties:
+    session-timeout: PT86400s
+    session-prefix: shiro:session
+    cookie-timeout: PT604800s
+    anon-url: /test/**,/febs/**,/img/**,/layui/**,/json/**,/images/captcha,/register
+    login-url: /login
+    success-url: /index
+    logout-url: /logout
+    unauthorized-url: /unauthorized
+
+  jwt-properties:
+    secret: LucTianwf
+    expire: 604800
+    header: token

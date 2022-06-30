@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lc.auth.center.mapper.LoginLogDao">
+
+    <resultMap id="BaseResultMap" type="com.lc.auth.center.model.LoginLogDO">
+        <!--@Table -->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="loginName" column="login_name" jdbcType="VARCHAR"/>
+        <result property="loginTime" column="login_time" jdbcType="TIMESTAMP"/>
+        <result property="loginLocation" column="login_location" jdbcType="VARCHAR"/>
+        <result property="loginIp" column="login_ip" jdbcType="VARCHAR"/>
+        <result property="loginSystem" column="login_system" jdbcType="VARCHAR"/>
+        <result property="loginBrowser" column="login_browser" jdbcType="VARCHAR"/>
+        <result property="dtCreated" column="dt_created" jdbcType="TIMESTAMP"/>
+        <result property="dtModified" column="dt_modified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
+</mapper>
+

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lc.auth.center.mapper.RoleRefPermissionDao">
+
+    <resultMap id="BaseResultMap" type="com.lc.auth.center.model.RoleRefPermissionDO">
+        <!--@Table -->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
+        <result property="invalid" column="invalid" jdbcType="INTEGER"/>
+        <result property="dtCreated" column="dt_created" jdbcType="TIMESTAMP"/>
+        <result property="dtModified" column="dt_modified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+          id, role_id, permission_id, invalid, dt_created, dt_modified    </sql>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap" >
+        select
+          id, role_id, permission_id, invalid, dt_created, dt_modified        from auth-center.role_ref_permission
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          id, role_id, permission_id, invalid, dt_created, dt_modified
+        from auth-center.role_ref_permission
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+            <if test="permissionId != null">
+                and permission_id = #{permissionId}
+            </if>
+            <if test="invalid != null">
+                and invalid = #{invalid}
+            </if>
+            <if test="dtCreated != null">
+                and dt_created = #{dtCreated}
+            </if>
+            <if test="dtModified != null">
+                and dt_modified = #{dtModified}
+            </if>
+        </where>
+    </select>
+</mapper>
+

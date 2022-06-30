@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lc.auth.center.mapper.UPermissionDao">
+
+    <resultMap id="BaseResultMap" type="com.lc.auth.center.model.UPermissionDO">
+        <!--@Table -->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="desc" column="desc" jdbcType="VARCHAR"/>
+        <result property="invalid" column="invalid" jdbcType="INTEGER"/>
+        <result property="dtCreated" column="dt_created" jdbcType="TIMESTAMP"/>
+        <result property="dtModified" column="dt_modified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="RolePermissionMap" type="com.lc.auth.center.bo.RoleRefPermissionBO">
+        <!--@Table -->
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        <result property="roleDesc" column="role_desc" jdbcType="VARCHAR"/>
+        <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
+        <result property="permissionDesc" column="permission_desc" jdbcType="VARCHAR"/>
+        <result property="invalid" column="invalid" jdbcType="INTEGER"/>
+        <result property="dtCreated" column="dt_created" jdbcType="TIMESTAMP"/>
+        <result property="dtModified" column="dt_modified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+          id, desc, invalid, dt_created, dt_modified    </sql>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap" >
+        select
+          id, desc, invalid, dt_created, dt_modified        from auth-center.u_permission
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          id, desc, invalid, dt_created, dt_modified
+        from auth-center.u_permission
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="desc != null and desc != ''">
+                and desc = #{desc}
+            </if>
+            <if test="invalid != null">
+                and invalid = #{invalid}
+            </if>
+            <if test="dtCreated != null">
+                and dt_created = #{dtCreated}
+            </if>
+            <if test="dtModified != null">
+                and dt_modified = #{dtModified}
+            </if>
+        </where>
+    </select>
+
+    <!--通过角色描述，查询对应的权限-->
+    <select id="queryRolePermissionList" resultMap="RolePermissionMap">
+    </select>
+</mapper>
+
