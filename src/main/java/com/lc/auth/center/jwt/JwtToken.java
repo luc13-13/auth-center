@@ -11,15 +11,19 @@ import org.apache.shiro.authc.RememberMeAuthenticationToken;
  */
 public class JwtToken implements AuthenticationToken, RememberMeAuthenticationToken {
     private String token;
-    private boolean isRememberMe;
+    /** true: 记住我 or false: 不记住 */
+    private boolean rememberMe;
 
     @Override
     public boolean isRememberMe() {
-        return this.isRememberMe;
+        if (this.rememberMe) {
+
+        }
+        return this.rememberMe;
     }
 
-    public JwtToken(String token, boolean isRememberMe) {
-        this.isRememberMe = isRememberMe;
+    public JwtToken(String token, boolean rememberMe) {
+        this.rememberMe = rememberMe;
         this.token = token;
     }
 
@@ -35,6 +39,6 @@ public class JwtToken implements AuthenticationToken, RememberMeAuthenticationTo
 
     @Override
     public String toString() {
-        return "JwtToken{token:"+token+",isRememberMe:"+isRememberMe+"}";
+        return "JwtToken{token:"+token+",isRememberMe:"+ rememberMe +"}";
     }
 }

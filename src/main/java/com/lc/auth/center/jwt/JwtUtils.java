@@ -3,8 +3,12 @@ package com.lc.auth.center.jwt;
 import com.alibaba.fastjson.JSONObject;
 import com.lc.auth.center.constant.JwtProperties;
 
+import com.lc.auth.center.utils.RedisUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -22,12 +26,17 @@ import lombok.extern.slf4j.Slf4j;
  * @version: 1.0
  */
 @Data
-@Component
-@EnableConfigurationProperties(JwtProperties.class)
 @Slf4j
-public class JwtUtils {
-    @Autowired
-    private JwtProperties jwtProperties;
+@Component
+public class JwtUtils{
+
+//    private final RedisUtils redisUtils;
+    private final JwtProperties jwtProperties;
+
+    public JwtUtils(JwtProperties jwtProperties) {
+//        this.redisUtils = redisUtils;
+        this.jwtProperties = jwtProperties;
+    }
 
     /**
      * TODO:token生成策略采用Shiro还是自定义？
@@ -36,7 +45,8 @@ public class JwtUtils {
      * @return
      */
     public String generateToken(String loginName) {
-        log.info("JwtUtils=========当前系统Jwt配置: ", JSONObject.toJSONString(jwtProperties));
+        log.info("JwtUtils=========当前系统Jwt配置: {}", jwtProperties);
+
         long nowTime = System.currentTimeMillis();
         Date expireTime = new Date(nowTime + jwtProperties.getExpire() * 1000);
 
