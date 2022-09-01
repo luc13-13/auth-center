@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("u_permission")
+@TableName("auth_center.u_permission")
 public class UPermissionDO {
 
 

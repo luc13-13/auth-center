@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("user_ref_role")
+@TableName("auth_center.user_ref_role")
 public class UserRefRoleDO {
 
 

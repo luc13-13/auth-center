@@ -37,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginController extends BaseLoginController{
 
     private final UserService userService;
-    private final RoleService roleService;
     private final JwtUtils jwtUtils;
+
 
     @PostMapping("/login")
     public WebResult<String> login(@Validated @RequestBody LoginRequest loginRequest, HttpServletResponse response) {

@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("user")
+@TableName("auth_center.user")
 public class UserDO {
 
     /*** 主键id */

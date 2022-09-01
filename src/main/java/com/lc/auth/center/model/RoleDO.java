@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("role")
+@TableName("auth_center.role")
 public class RoleDO{
 
     /*** 主键id */

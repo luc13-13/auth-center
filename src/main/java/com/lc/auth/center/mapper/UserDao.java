@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.lc.auth.center.bo.UserBO;
 import com.lc.auth.center.model.UserDO;
 import com.lc.auth.center.model.ex.UserDOex;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

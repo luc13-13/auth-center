@@ -19,7 +19,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @EnableCaching
-@MapperScan("mapper/*.xml")
+@MapperScan(basePackages = {"com.lc.auth.center.mapper"})
 @EnableConfigurationProperties({LucSysProperties.class, JwtProperties.class, ShiroProperties.class, RedisProperties.class})
 @EnableDiscoveryClient
 @EnableFeignClients

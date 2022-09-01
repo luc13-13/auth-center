@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("login_log")
+@TableName("auth_center.login_log")
 public class LoginLogDO {
 
     /** 主键id */     

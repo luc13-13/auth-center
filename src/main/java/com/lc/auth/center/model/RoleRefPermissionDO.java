@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("role_ref_permission")
+@TableName("auth_center.role_ref_permission")
 public class RoleRefPermissionDO {
 
     /*** 主键id */
