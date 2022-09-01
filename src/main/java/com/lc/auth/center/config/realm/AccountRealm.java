@@ -8,6 +8,7 @@ import com.lc.auth.center.model.UserDO;
 import com.lc.auth.center.service.UserService;
 import com.lc.auth.center.jwt.JwtUtils;
 
+import com.lc.auth.center.utils.RedisUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -28,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 用户身份认证的核心realm，将其注入 {@link DefaultWebSecurityManager}, 实现自定义的认证逻辑
  *
- * @author: lucheng
- * @data: 2022/4/29 16:16
- * @version: 1.0
+ * @Author: Lu Cheng
+ * @Data: 2022/4/29 16:16
+ * @Version: 1.0
  */
 @Slf4j
 @Component
@@ -65,8 +66,8 @@ public class AccountRealm extends AuthorizingRealm {
      * * 如果在shiro配置文件中添加了filterChainDefinitionMap.put("/add", "roles[100002]，perms[权限添加]");
      * * 就说明访问/add这个链接必须要有 "权限添加" 这个权限和具有 "100002" 这个角色才可以访问
      *
-     * @param principalCollection
-     * @return
+     * @param principalCollection 用户的权限集合，如果有多个Realm则进行遍历，如果只有一个Realm则进行get(0)
+     * @return 返回的结果中包含了用户的角色和权限
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
@@ -94,15 +95,16 @@ public class AccountRealm extends AuthorizingRealm {
     /**
      * AuthenticationToken 已被 {@link JwtToken}继承并重写方法，对传来的token进行校验
      *
-     * @param authenticationToken
+     * @param authenticationToken 已被 {@link JwtToken}继承并重写方法，对传来的token进行解码的到JWT的subject。TODO: 将JWT的subject与shiro进行内容同步
      * @return 认证成功则返回用户认证信息 {@link AuthenticationInfo} 给 shiro
-     * @throws AuthenticationException
+     * @throws AuthenticationException 出错的地方可能在userService和JwtUtils
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         JwtToken jwt = (JwtToken) authenticationToken;
         log.info("|进入认证方法==========获取jwtToken:{}", jwt);
         log.info("principle:{}", jwt.getPrincipal());
+        // token未过期则说明用户已经登陆
         String loginName = jwtUtils.getClaimByToken((String) jwt.getPrincipal()).getSubject();
         log.info("获取login_name: {}", loginName);
         UserDO userDO = Optional.ofNullable(
@@ -111,17 +113,20 @@ public class AccountRealm extends AuthorizingRealm {
                         .selectOne(new QueryWrapper<UserDO>().eq("login_name", loginName)))
                 .filter(o -> o.getInvalid() != 0)
                 .orElseThrow(() -> new UnknownAccountException("账户过期或不存在！"));
+        UserBO userBO = UserBO.builder().build();
+        BeanUtils.copyProperties(userDO,userBO);
+        // 封装用户角色和权限集合
+        userService.getAuthorizationInfo(userBO);
         AccountProfile accountProfile = AccountProfile.builder().build();
-        BeanUtils.copyProperties(userDO, accountProfile);
+        BeanUtils.copyProperties(userBO, accountProfile);
         log.info("========认证成功|-----accountProfile:{}", accountProfile);
         return new SimpleAuthenticationInfo(accountProfile, jwt.getCredentials(), getName());
     }
 
     /**
-     * 只返回{@link JwtToken},
      *
-     * @param token
-     * @return
+     * @param token 校验是否支持使用该token进行登陆
+     * @return true为支持，这里只返回{@link JwtToken},
      */
     @Override
     public boolean supports(AuthenticationToken token) {
