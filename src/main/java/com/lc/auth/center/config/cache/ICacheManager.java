@@ -1,13 +1,8 @@
 package com.lc.auth.center.config.cache;
 
-import com.lc.auth.center.annotation.ConditionalOnRedisCache;
 import com.lc.auth.center.config.shiro.LucRedisSessionDAO;
 import com.lc.auth.center.constant.LucSysProperties;
 import com.lc.auth.center.constant.ShiroProperties;
-
-import org.apache.shiro.cache.Cache;
-import org.apache.shiro.cache.CacheException;
-import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
 import org.apache.shiro.session.mgt.eis.MemorySessionDAO;
@@ -15,20 +10,15 @@ import org.apache.shiro.session.mgt.eis.SessionIdGenerator;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import com.lc.auth.center.annotation.ConditionalOnRedisCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.support.collections.RedisCollectionFactoryBean;
-import org.springframework.util.StringUtils;
-
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -48,7 +38,7 @@ public class ICacheManager {
         this.shiroProperties = lucSysProperties.getShiroProperties();
     }
 
-    @Bean(name = "redisManager")
+    @Bean(name = "shiroRedisManager")
     @ConditionalOnRedisCache
     public RedisManager redisManager(RedisProperties redisProperties) {
         RedisManager redisManager = new RedisManager();
@@ -61,15 +51,15 @@ public class ICacheManager {
         return redisManager;
     }
 
-    @Bean(name = "redisCacheManager")
+    @Bean(name = "shiroRedisCacheManager")
     @ConditionalOnRedisCache
-    public RedisCacheManager redisCacheManager(RedisManager redisManager) {
-        ShiroProperties anotherShiroProperties = lucSysProperties.getShiroProperties();
-        log.info("自动装配的shiroProperties: {}； 从LucSysProperties中获得的:{}",this.shiroProperties,anotherShiroProperties);
+    public RedisCacheManager redisCacheManager(@Qualifier("shiroRedisManager") RedisManager redisManager) {
+        log.info("自动装配的shiroProperties: {}； 从LucSysProperties中获得的:{}",this.shiroProperties);
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(redisManager);
+        //
         redisCacheManager.setExpire((int) shiroProperties.getSessionTimeout().getSeconds());
-        redisCacheManager.setKeyPrefix("shiro:session");
+        redisCacheManager.setKeyPrefix(shiroProperties.getSessionPrefix() + ":cache:");
         return redisCacheManager;
     }
 
