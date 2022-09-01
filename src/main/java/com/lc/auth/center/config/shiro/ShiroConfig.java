@@ -4,9 +4,11 @@ import com.lc.auth.center.config.ShiroLifeStyleBeanPostProcessorConfig;
 import com.lc.auth.center.config.cache.ICacheManager;
 import com.lc.auth.center.config.cache.SystemCacheSelector;
 import com.lc.auth.center.constant.LucSysProperties;
+import com.lc.auth.center.jwt.JwtUtils;
 import com.lc.auth.center.listener.ShiroSessionListener;
 import com.lc.auth.center.config.realm.AccountRealm;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.RememberMeManager;
@@ -34,6 +36,7 @@ import java.util.Map;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -60,6 +63,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter({ShiroLifeStyleBeanPostProcessorConfig.class,ICacheManager.class, SystemCacheSelector.class})
 @RequiredArgsConstructor
+@Slf4j
 public class ShiroConfig {
     private final LucSysProperties lucSysProperties;
 
@@ -89,8 +93,8 @@ public class ShiroConfig {
     @Bean(name = "defaultWebSecurityManager")
     public DefaultWebSecurityManager securityManager(@Qualifier("sessionManager") SessionManager sessionManager,
                                                      @Nullable @Qualifier("ehCacheManager") EhCacheManager ehCacheManager,
-                                                     @Nullable @Qualifier("redisCacheManager")  RedisCacheManager redisCacheManager,
-                                                     @Qualifier("rememberMeManager")RememberMeManager rememberMeManager,
+                                                     @Nullable @Qualifier("shiroRedisCacheManager")  RedisCacheManager redisCacheManager,
+                                                     @Qualifier("cookieRememberMeManager")CookieRememberMeManager rememberMeManager,
                                                      AccountRealm accountRealm) {
 
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -104,7 +108,7 @@ public class ShiroConfig {
     }
 
     /**
-     * DefaultWebSecurityManager -> 2.1 缓存管理
+     * DefaultWebSecurityManager -> 2.1 缓存管理, 已放入{@link ICacheManager}
      * @return
      */
 //    @Bean(name = "ehCacheManager")
@@ -122,7 +126,7 @@ public class ShiroConfig {
     @Bean(name = "sessionManager")
     public SessionManager sessionManager(@Nullable @Qualifier("ehCacheManager") EhCacheManager ehCacheManager,
                                          @Nullable @Qualifier("memorySessionDAO") MemorySessionDAO memorySessionDAO,
-                                         @Nullable @Qualifier("redisCacheManager") RedisCacheManager redisCacheManager,
+                                         @Nullable @Qualifier("shiroRedisCacheManager") RedisCacheManager redisCacheManager,
                                          @Nullable @Qualifier("lucRedisSessionDAO") RedisSessionDAO redisSessionDAO,
                                          @Qualifier("sessionIdCookie") SimpleCookie sessionIdCookie){
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
@@ -135,20 +139,25 @@ public class ShiroConfig {
         // 设置缓存访问对象. sessionDAO中需要包括 cacheManager/缓存名字/cacheId
         sessionManager.setSessionDAO(redisSessionDAO != null ? redisSessionDAO : memorySessionDAO);
         sessionManager.setSessionIdCookie(sessionIdCookie);
+
+        // session过期时间, shiro的单位是毫秒，这里进行转换
+        sessionManager.setGlobalSessionTimeout(lucSysProperties.getShiroProperties().getSessionTimeout().toMillis());
+        log.info(" sessionManager======== sessionIdCookie: {}",sessionIdCookie);
         return sessionManager;
     }
     /**
      * 2.2 SessionManager会话管理 -> 2.2.1 会话访问对象，相当于对会话进行CRUD的DAO
+     * 已在 {@link com.lc.auth.center.config.cache.ICacheManager}中进行管理
      * @param javaUuidSessionIdGenerator
      * @return
      */
-    @Bean(name = "memorySessionDAO")
-    @ConditionalOnMissingBean(RedisSessionDAO.class)
-    public MemorySessionDAO memorySessionDAO(@Qualifier("javaUuidSessionIdGenerator") SessionIdGenerator javaUuidSessionIdGenerator) {
-        MemorySessionDAO memorySessionDAO = new MemorySessionDAO();
-        memorySessionDAO.setSessionIdGenerator(javaUuidSessionIdGenerator);
-        return memorySessionDAO;
-    }
+//    @Bean(name = "memorySessionDAO")
+//    @ConditionalOnMissingBean(RedisSessionDAO.class)
+//    public MemorySessionDAO memorySessionDAO(@Qualifier("javaUuidSessionIdGenerator") SessionIdGenerator javaUuidSessionIdGenerator) {
+//        MemorySessionDAO memorySessionDAO = new MemorySessionDAO();
+//        memorySessionDAO.setSessionIdGenerator(javaUuidSessionIdGenerator);
+//        return memorySessionDAO;
+//    }
 
     /**
      * 2.2.1 会话访问对象SessionDAO -> (1) SessionDAO进行CRUD时采用的UID生成器
@@ -175,8 +184,8 @@ public class ShiroConfig {
      * @param simpleRememberCookie
      * @return
      */
-    @Bean(name = "rememberMeManager")
-    public RememberMeManager rememberMeManager(@Qualifier("simpleRememberCookie") SimpleCookie simpleRememberCookie) {
+    @Bean(name = "cookieRememberMeManager")
+    public CookieRememberMeManager rememberMeManager(@Qualifier("simpleRememberCookie") SimpleCookie simpleRememberCookie) {
         CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
         cookieRememberMeManager.setCookie(simpleRememberCookie);
         // 设置cookie密钥
@@ -279,6 +288,9 @@ public class ShiroConfig {
              * roles 参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，当有多个参数时，例如user/**=roles["admin,guest"],每个参数通过才算通过，相当于hasAllRoles()方法。
              * ssl 没有参数，表示安全的url请求，协议为https
              * user 没有参数表示必须存在用户，当登入操作时不做检查
+         * ?：匹配一个字符，如/admin?, 将匹配/admin1，但不匹配/admin 或/admin/；
+         * *：匹配零个或多个字符串，如/admin/*, 将匹配/admin、/admin123，但不匹配/admin/1；
+         * **：匹配路径中的零个或多个路径，如/admin/**, 将匹配/admin/a 或/admin/a/b
              */
         filterMap.put("/logout","logout");
         //配置不登录可以访问的资源，anon 表示资源都可以匿名访问
@@ -294,6 +306,7 @@ public class ShiroConfig {
         filterMap.put("/api-docs/**", "anon");
         filterMap.put("/article/manage/**","perms[user:manager]");
         filterMap.put("/article/visit/**","perms[user:visit]");
+        filterMap.put("/user/**","perms[浏览全部内容]");
         filterChainDefinition.addPathDefinitions(filterMap);
         return filterChainDefinition;
     }

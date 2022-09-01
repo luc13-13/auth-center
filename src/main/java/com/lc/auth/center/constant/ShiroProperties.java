@@ -15,37 +15,85 @@ import lombok.Data;
  * @version: 1.0
  */
 @Data
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ConfigurationProperties(prefix = LucSysProperties.PREFIX + "shiro-properties")
+@ConfigurationProperties(prefix = LucSysProperties.PREFIX + ".shiro-properties")
 public class ShiroProperties {
     /** 会话过期时间  单位秒    */
     private Duration sessionTimeout;
     private String sessionPrefix;
+    private String cookiePrefix;
+
     /** cookie过期时间  单位秒*/
     private Duration cookieTimeout;
-    // Jwts生成token时的密钥，同时也用于和token生成Claims
+
+    /** cookie过期时间  单位秒*/
     private String anonUrl;
     private String loginUrl;
     private String successUrl;
     private String logoutUrl;
     private String unauthorizedUrl;
 
-    @Override
-    public String toString() {
-        return "ShiroProperties{" +
-                "sessionTimeout=" + sessionTimeout +
-                ", cookieTimeout=" + cookieTimeout +
-                ", anonUrl='" + anonUrl + '\'' +
-                ", loginUrl='" + loginUrl + '\'' +
-                ", successUrl='" + successUrl + '\'' +
-                ", logoutUrl='" + logoutUrl + '\'' +
-                ", unauthorizedUrl='" + unauthorizedUrl + '\'' +
-                '}';
+    public Duration getSessionTimeout() {
+        return sessionTimeout;
     }
-    //    private String secret;
-//    // token过期时间
-//    private long expire;
-//    // token头信息
-//    private String header;
+
+    public void setSessionTimeout(Duration sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
+
+    public String getSessionPrefix() {
+        return sessionPrefix;
+    }
+
+    public void setSessionPrefix(String sessionPrefix) {
+        this.sessionPrefix = sessionPrefix;
+    }
+
+    public Duration getCookieTimeout() {
+        return cookieTimeout;
+    }
+
+    public void setCookieTimeout(Duration cookieTimeout) {
+        this.cookieTimeout = cookieTimeout;
+    }
+
+    public String getAnonUrl() {
+        return anonUrl;
+    }
+
+    public void setAnonUrl(String anonUrl) {
+        this.anonUrl = anonUrl;
+    }
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
+
+    public String getSuccessUrl() {
+        return successUrl;
+    }
+
+    public void setSuccessUrl(String successUrl) {
+        this.successUrl = successUrl;
+    }
+
+    public String getLogoutUrl() {
+        return logoutUrl;
+    }
+
+    public void setLogoutUrl(String logoutUrl) {
+        this.logoutUrl = logoutUrl;
+    }
+
+    public String getUnauthorizedUrl() {
+        return unauthorizedUrl;
+    }
+
+    public void setUnauthorizedUrl(String unauthorizedUrl) {
+        this.unauthorizedUrl = unauthorizedUrl;
+    }
 }
