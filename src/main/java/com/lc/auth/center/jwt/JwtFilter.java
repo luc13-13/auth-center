@@ -45,7 +45,7 @@ public class JwtFilter extends AuthenticatingFilter {
     protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String jwtToken = request.getHeader("Authentication");
-        boolean isRememberMe = "rememberMe".equals(request.getHeader("rememberMe"));
+        boolean isRememberMe = Boolean.parseBoolean(request.getHeader("rememberMe"));
         log.info("com.lc.blog.shiro.jwt 校验ServletRequest中jwtToken{},rememberMe:{}",jwtToken);
         return StringUtils.hasLength(jwtToken) ? new JwtToken(jwtToken,isRememberMe) : null;
     }
