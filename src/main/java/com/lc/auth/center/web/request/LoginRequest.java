@@ -3,6 +3,8 @@ package com.lc.auth.center.web.request;
 import java.util.Date;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * @author: lucheng
@@ -10,6 +12,7 @@ import lombok.Data;
  * @version: 1.0
  */
 @Data
+@RequiredArgsConstructor
 public class LoginRequest {
 
     private String loginName;
