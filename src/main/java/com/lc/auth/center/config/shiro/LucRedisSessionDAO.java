@@ -43,7 +43,7 @@ public class LucRedisSessionDAO extends RedisSessionDAO {
 
     public LucRedisSessionDAO(ShiroProperties shiroProperties){
         this.shiroProperties = shiroProperties;
-        this.setKeyPrefix(shiroProperties.getSessionPrefix());
+        this.setKeyPrefix(shiroProperties.getSessionPrefix()+":");
         this.setSessionInMemoryTimeout(shiroProperties.getSessionTimeout().getSeconds());
     }
 
