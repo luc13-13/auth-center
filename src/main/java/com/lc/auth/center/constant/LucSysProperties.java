@@ -1,21 +1,14 @@
 package com.lc.auth.center.constant;
 
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-
 import lombok.Data;
 
 /**
- * @author: lucheng
- * @data: 2022/4/30 23:43
- * @version: 1.0
+ * @Author: Lu Cheng
+ * @Data: 2022/4/30 23:43
+ * @Version: 1.0
  */
-@SpringBootConfiguration(proxyBeanMethods = false)
-@Configuration
 @ConfigurationProperties(prefix = "luc-sys-properties")
-@Primary
 @Data
 public class LucSysProperties {
     public static final String PREFIX = "luc-sys-properties";
@@ -27,4 +20,27 @@ public class LucSysProperties {
 
     private JwtProperties jwtProperties;
 
+    public String getEnableRedisCache() {
+        return enableRedisCache;
+    }
+
+    public void setEnableRedisCache(String enableRedisCache) {
+        this.enableRedisCache = enableRedisCache;
+    }
+
+    public ShiroProperties getShiroProperties() {
+        return shiroProperties;
+    }
+
+    public void setShiroProperties(ShiroProperties shiroProperties) {
+        this.shiroProperties = shiroProperties;
+    }
+
+    public JwtProperties getJwtProperties() {
+        return jwtProperties;
+    }
+
+    public void setJwtProperties(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 }
