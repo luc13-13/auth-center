@@ -4,10 +4,12 @@ import com.lc.auth.center.constant.LucSysProperties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.lang.NonNull;
@@ -19,13 +21,14 @@ import java.util.Properties;
  *
  * @author MrBird
  */
-@Configuration(proxyBeanMethods = false)
-public class SystemCacheSelector implements BeanDefinitionRegistryPostProcessor {
+//@Configuration(proxyBeanMethods = false)
+//@AutoConfigureAfter(LucSysProperties.class)
+public class SystemCacheSelector {//implements BeanDefinitionRegistryPostProcessor {
 
     private volatile boolean finished = false;
     private boolean enableRedisCache;
 
-    @Override
+    //@Override
     public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
         if (!finished) {
             // 时机较早，必须手动获取配置
@@ -47,7 +50,7 @@ public class SystemCacheSelector implements BeanDefinitionRegistryPostProcessor 
         }
     }
 
-    @Override
+   // @Override
     public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
     }
