@@ -14,7 +14,6 @@ import com.luc.framework.core.mvc.WebResult;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -49,6 +48,7 @@ public class LoginController extends BaseLoginController{
                 .eq("invalid", 1);
         UserDO userDO = userService.getOne(wrapper);
         log.info("查询到的用户: {}", JSONObject.toJSONString(userDO));
+        // TODO: 密码解密
         if(! StringUtils.pathEquals(loginRequest.getPassword(), userDO.getPwd())) {
             return WebResult.response(Status.generate(401,""),"密码错误");
         }
