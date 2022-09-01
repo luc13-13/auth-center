@@ -25,10 +25,11 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/getUserList")
-    @RequiresPermissions("浏览全部内容")
+//    @RequiresPermissions("浏览全部内容")
     public WebResult<List<UserDO>> getUserList(){
         List<UserDO> userDOList = userService.list();
 //        List<UserVO> voList = new ArrayList<>();
         return WebResult.successData(userDOList);
     }
+
 }
