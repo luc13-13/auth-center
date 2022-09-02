@@ -3,7 +3,7 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-        namespace: 04046308-cac3-4245-a657-998c7a3a1427  #dev
+        namespace: 50c2d2dc-2adc-43da-8d43-5d6d4aad2aa3  #auth-center
         enabled: true
         metadata:
           preserved.heart.beat.interval: 10000
@@ -16,7 +16,7 @@ spring:
         password: nacos
         refresh-enabled: true
         file-extension: yaml
-        namespace: 04046308-cac3-4245-a657-998c7a3a1427
+        namespace: 50c2d2dc-2adc-43da-8d43-5d6d4aad2aa3
         shared-configs[0]:
           group: DEFAULT_GROUP
           data-id: auth-center-dev.yaml
