@@ -50,6 +50,7 @@ public class JwtUtils{
         long nowTime = System.currentTimeMillis();
         Date expireTime = new Date(nowTime + jwtProperties.getExpire() * 1000);
 
+        // 基于密钥 jwtProperties.getSecret() 和加密方式HS384 对loginName进行加密， 将结果作为token使用
         return Jwts.builder()
                 .setHeaderParam("type","JWT")
                 .setSubject(loginName)
@@ -60,7 +61,8 @@ public class JwtUtils{
     }
 
     /**
-     * jwttoken中的  {@link Claims}
+     * jwtToken中的token为经过加密后的字符串，这里通过Jwt解密方法的到加密前的解析 {@link Claims}
+     * Claim.getSubject()实际上为从内部的map中取sub
      * @param token
      * @return
      */
@@ -83,6 +85,7 @@ public class JwtUtils{
     public boolean isTokenExpired(String token) {
         return this.getClaimByToken(token).getExpiration().before(new Date());
     }
+
 
 
 }

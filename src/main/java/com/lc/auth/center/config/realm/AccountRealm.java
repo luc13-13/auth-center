@@ -101,11 +101,11 @@ public class AccountRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        JwtToken jwt = (JwtToken) authenticationToken;
-        log.info("|进入认证方法==========获取jwtToken:{}", jwt);
-        log.info("principle:{}", jwt.getPrincipal());
+        JwtToken jwtToken = (JwtToken) authenticationToken;
+        log.info("|进入认证方法==========获取jwtToken:{}", jwtToken);
+        log.info("principle:{}", jwtToken.getPrincipal());
         // token未过期则说明用户已经登陆
-        String loginName = jwtUtils.getClaimByToken((String) jwt.getPrincipal()).getSubject();
+        String loginName = jwtUtils.getClaimByToken((String) jwtToken.getPrincipal()).getSubject();
         log.info("获取login_name: {}", loginName);
         UserDO userDO = Optional.ofNullable(
                 userService
@@ -120,7 +120,7 @@ public class AccountRealm extends AuthorizingRealm {
         AccountProfile accountProfile = AccountProfile.builder().build();
         BeanUtils.copyProperties(userBO, accountProfile);
         log.info("========认证成功|-----accountProfile:{}", accountProfile);
-        return new SimpleAuthenticationInfo(accountProfile, jwt.getCredentials(), getName());
+        return new SimpleAuthenticationInfo(accountProfile, jwtToken.getCredentials(), getName());
     }
 
     /**
