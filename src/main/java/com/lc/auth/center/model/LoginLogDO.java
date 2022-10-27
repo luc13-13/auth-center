@@ -1,8 +1,6 @@
 package com.lc.auth.center.model;
  
 import java.util.Date;
-import java.io.Serializable;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.Builder;
 import lombok.AllArgsConstructor;

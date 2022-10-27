@@ -2,7 +2,6 @@ package com.lc.auth.center;
 
 import org.apache.shiro.codec.Base64;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +18,6 @@ import javax.annotation.security.RunAs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 class DemoApplicationTests {
 
 	@Test

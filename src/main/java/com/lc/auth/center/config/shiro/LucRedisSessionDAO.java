@@ -1,6 +1,5 @@
 package com.lc.auth.center.config.shiro;
 
-import com.alibaba.fastjson.JSONObject;
 import com.lc.auth.center.config.cache.LucRedisObjectSerializer;
 import com.lc.auth.center.config.cache.LucRedisStringSerializer;
 import com.lc.auth.center.constant.LucSysProperties;
