@@ -50,4 +50,4 @@ logging:
   level:
     root: debug
   file:
-    path: ./${spring.application.name}/logs
+    path: /${spring.application.name}/logs
